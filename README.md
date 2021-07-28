@@ -2,8 +2,8 @@
 u can build it on cf worker,inpu a domain u can see..
 
 use:
-copy & paste the code to cf-worker
+copy & paste  index.js code to cf-worker
 
 使用:
-复制代码到cf-worker里面就可以了。
+复制index.js代码到cf-worker里面就可以了。
 
