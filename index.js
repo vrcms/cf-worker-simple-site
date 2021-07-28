@@ -396,7 +396,7 @@ li a{
     </div>
     
     
-    </div></div></header><footer><div class="footer">Author <a class="ui label" href="/" target="_blank"><i class="github icon"></i>mslxd</a> © Base on <a class="ui label"><i class="balance scale icon"></i></a></div></footer>
+    </div></div></header><footer><div class="footer">Author <a class="ui label" href="https://github.com/vrcms/cf-worker-simple-site" target="_blank"><i class="github icon"></i>mslxd</a> © Base on <a class="ui label"><i class="balance scale icon"></i></a></div></footer>
     
 
 
