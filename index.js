@@ -48,28 +48,21 @@ async function handleRequest(request) {
 
   let nowurl = new URL(request.url);
 
+//if setting a cookie goto the site..
 if(cookie && cookie!='null'){
-  //这里设置了某个site
-  //  const init = {
-  //   headers: {
-  //     'content-type': 'text/html;charset=UTF-8',
-  //     }
-  //   }
-  // return new Response(''+clearbtn,init);
   upstream = upstream_mobile = cookie;
   if (nowurl.pathname == '/F' || nowurl.pathname == '/f') {
       return indexpage()
   }
 
+//goto the site
 return fetchAndApply(request);
 
 }
 
 return indexpage();
 
-//如果没有cookie则显示首页
-
-
+//show homepage
 function indexpage(){
 const init = {
     headers: {
@@ -93,15 +86,6 @@ addEventListener('fetch', event => {
 async function fetchAndApply(request) {
   let response = null;
 
-  //console.log(request);
-    // var nowsite = request.headers.get('getsite');
-    // console.log(nowsite);
-    // if(nowsite==null || nowsite == ''){      
-    //  var myHeaders = { 'Content-Type': 'text/html','cache-control': 'public, max-age=0', 'Etag':'nicetomeetyoug' }
-    //     var init = {"status":200, "statusText":"ok", headers: myHeaders};
-    //     response = new Response('<html><body><input type="text" value="163.com" /></body></html>', init)
-    //     return response;
-    // }
     const region = request.headers.get('cf-ipcountry').toUpperCase();
     const ip_address = request.headers.get('cf-connecting-ip');
     const user_agent = request.headers.get('user-agent');
@@ -176,7 +160,7 @@ async function fetchAndApply(request) {
         //new_response_headers.set('Referer', 'https://'+upstream);
 
         const content_type = new_response_headers.get('content-type');
-        if (content_type.includes('text/htmlstop') ) {           
+        if (content_type.includes('text/html') ) {           
             original_text = await replace_response_text(original_response_clone, upstream_domain, url_hostname);
             
         } else {
@@ -250,10 +234,6 @@ async function replace_response_text(response, upstream_domain, host_name) {
 
         let newre = new RegExp('</body>', 'g');
         text = text.replace(newre, clearurlbtn+'</body>');
-        //text += clearurlbtn;
-    
-    //text = GB2312UnicodeConverter.ToUnicode(text);
-    //console.log(text);
 
     
     return text;
@@ -307,28 +287,31 @@ const clearurlbtn = `
 <style>
 #clearsite {    
     position: fixed;
-    right: 50px;
-    bottom: 50px;
+    right: 0px;
+    top: 150px;
+    border:1px solid #4183c4;
+    padding:5px 5px;
+
+    border-color: #eaeaea;
+    background: #fafafa;
+    cursor: default;
+    
+    color: #999;    
+
+
+    box-shadow: -1px 0 6px rgb(0 0 0 / 20%);
+    cursor: pointer;
 }
 </style>
-<button id="clearsite">ChangeWeb</button>
+<button id="clearsite" title="点击返回 click go back https://muddy-shape-838b.testpp2020.workers.dev/">返回Back</button>
 <script>
   var btn = document.getElementById("clearsite");
         
-        btn.onclick = function(){            
-            setCookie('gotosite',null);
+        btn.onclick = function(){
             var url = window.location.protocol + '//' + window.location.host;
-            //location.reload();
-            window.location.href= url;
+            window.location.href= url+'/F';
         }
 
-        function setCookie(name,value)
-{
-    var Days = 30;
-    var exp = new Date();
-    exp.setTime(exp.getTime() + Days*24*60*60*1000);
-    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString()+";path=/";
-}
   </script>
 `
 
@@ -336,7 +319,7 @@ const someHTML = `<html lang="en"><head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
-      <title>你好，世界</title>
+      <title>你好，世界 Hello World!</title>
       <link href="https://cdn.jsdelivr.net/npm/semantic-ui-css@2.4.1/semantic.min.css" rel="stylesheet">
       <link href="https://cdn.jsdelivr.net/gh/sleepwood/cf-worker-dir@0.1.1/style.css" rel="stylesheet">
       <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
@@ -348,6 +331,7 @@ const someHTML = `<html lang="en"><head>
   }
   .urllinke{
     color:red;
+    padding:0px 5px;
   }
   .header{
     color:white;
@@ -373,14 +357,15 @@ li a{
   <body>
     <header><div id="head" class="ui inverted vertical masthead center aligned segment"><div id="nav" class="ui container">
 	<div class="ui large secondary inverted menu"><div class="item"><p id="hitokoto"></p></div></div></div>
-	<div id="title" class="ui text container"><h1 class="ui inverted header"><i class="bolt icon"></i><div class="content">你好，世界<div class="sub header">Powered by www.dabeizi.com</div></div></h1>
+	<div id="title" class="ui text container"><h1 class="ui inverted header"><i class="bolt icon"></i><div class="content">你好，世界 Hello World!<div class="sub header">Powered by www.dabeizi.com</div></div></h1>
 	<div class="ui left corner labeled right icon fluid large input">
 	
-	<input id="gotosite" type="search" placeholder="请输入……" autocomplete="off">
+	<input id="gotosite" type="search" placeholder="请输入……input a domain" autocomplete="off">
   <i id="setsite" class="inverted circular search link icon"></i></div>
 	
 	<div id="sengine" class="ui bottom attached tabular inverted secondary menu">
 	<div class="header item">仅用于浏览，更换网址可在网址后面加上 <span class="urllinke"> /F </span> ，即可回到此页面</div>	
+    <div class="header item">Add <span class="urllinke"> /F </span>  on the link , u can come back here</div>	
 
    
 	
@@ -396,7 +381,9 @@ li a{
     </div>
     
     
-    </div></div></header><footer><div class="footer">Author <a class="ui label" href="https://github.com/vrcms/cf-worker-simple-site" target="_blank"><i class="github icon"></i>mslxd</a> © Base on <a class="ui label"><i class="balance scale icon"></i></a></div></footer>
+    </div></div></header><footer>
+    <div class="footer">Author 
+    <a class="ui label" href="https://github.com/vrcms/cf-worker-simple-site" target="_blank"><i class="github icon"></i>mslxd</a> © Base on <a class="ui label"><i class="balance scale icon"></i></a></div></footer>
     
 
 
