@@ -30,6 +30,7 @@ const clearurlbtn = `
   </script>
 `
 function add_html(){
+    console.log('Run js...');
     var btn = document.getElementById("clearsite");
     if(typeof btn == 'undefined'){
             //add goback botton
