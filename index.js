@@ -154,13 +154,16 @@ async function fetchAndApply(request) {
         new_response_headers.delete('content-security-policy');
         new_response_headers.delete('content-security-policy-report-only');
         new_response_headers.delete('clear-site-data');
-
+    
+        
         
 
         //new_response_headers.set('Referer', 'https://'+upstream);
 
         const content_type = new_response_headers.get('content-type');
-        if (content_type.includes('text/html') ) {           
+        //console.log('respheader type',content_type);
+
+        if (content_type.includes('text/html') && content_type.includes('utf-8') ) {           
             original_text = await replace_response_text(original_response_clone, upstream_domain, url_hostname);
             
         } else {
@@ -174,6 +177,12 @@ async function fetchAndApply(request) {
             }
             
         }
+
+        //add goback botton
+        original_text += `
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js"></script>
+        `;
+        
 
        
 //https://stackoverflow.com/questions/56660355/how-to-inject-javascript-in-existing-html-response-with-node-js-and-cloudflare-w
@@ -233,7 +242,7 @@ async function replace_response_text(response, upstream_domain, host_name) {
     }
 
         let newre = new RegExp('</body>', 'g');
-        text = text.replace(newre, clearurlbtn+'</body>');
+        //text = text.replace(newre, clearurlbtn+'</body>');
 
     
     return text;
@@ -495,7 +504,7 @@ li a{
 
             if(pathname='/F'){
                 var url = window.location.protocol + '//' + window.location.host;            
-                window.location.href= url+'?r='+Math.random();
+                window.location.href= url+'?r='+ Math.round( Math.random()*1000 );
             }else{                
                 location.reload(true);
             }            
@@ -521,38 +530,3 @@ li a{
   
   </body></html>`;
 
-const someHTML_OLD =  `<!DOCTYPE html>
-<html>
-  <body>
-  <h1 style="text-align:center">Hello World</h1>
-  <div style="text-align:center">
-<input type="text" id="gotosite" value="github.com" />
-  <button id="setsite">转向</button>
-  <p>请输入.....</p>
-  </div>
-  
-  <script>
-  var btn = document.getElementById("setsite");
-
-        // 第一种 通过点击事件
-        btn.onclick = function(){
-            //alert("这是第一种点击方式");
-              var val = document.getElementById("gotosite").value;
-            setCookie('gotosite',val);
-            location.reload();
-        }
-
-        function setCookie(name,value)
-{
-    var Days = 30;
-    var exp = new Date();
-    exp.setTime(exp.getTime() + Days*24*60*60*1000);
-    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString();
-}
-  </script>
-  
-
-  
-  </body>
-</html>
-`
