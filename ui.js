@@ -30,14 +30,20 @@ const clearurlbtn = `
   </script>
 `
 function add_html(){
-  //add goback botton
-  document.write(clearurlbtn)
+    var btn = document.getElementById("clearsite");
+    if(typeof btn == 'undefined'){
+            //add goback botton
+            document.write(clearurlbtn)
+    }
+  
 }
 
 
 window.onload=function(){
     add_html();
 }
+
+add_html();
 
 
 
