@@ -18,7 +18,7 @@ const clearurlbtn = `
     cursor: pointer;
 }
 </style>
-<button id="clearsite" title="点击返回 click go back https://muddy-shape-838b.testpp2020.workers.dev/">返回Back</button>
+<button id="clearsite" title="点击返回 click go back to the CF-WORKER">返回Back</button>
 <script>
   var btn = document.getElementById("clearsite");
         
