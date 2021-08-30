@@ -31,6 +31,8 @@ const replace_dict = {
     '//google.com': ''
 }
 
+var inject_js = `<script src="https://cdn.jsdelivr.net/gh/vrcms/cf-worker-simple-site@1.0.7/ui.js"></script>`;        
+
 
 
 async function handleRequest(request) {
@@ -189,16 +191,21 @@ async function fetchAndApply(request) {
         //     });
 
         // return response;    
-
+         //inject html
+        class ElementHandler {
+            element(element) {
+                element.append(inject_js, {html: true});
+            }
+        }
+        
 
         if (content_type.includes('text/html') && content_type.includes('utf-8')) {
             original_text = await replace_response_text(original_response_clone, upstream_domain, url_hostname);
 
         } else {
             if (content_type.includes('text/html')) {
-                original_text = await original_response_clone.body;
-                //original_text = `<script src="https://cdn.jsdelivr.net/gh/vrcms/cf-worker-simple-site@1.0.2/ui.js"></script>`+original_text;
-                //console.log('original_text',original_text)
+                original_text = await original_response_clone.body;                                
+                return new HTMLRewriter().on("head", new ElementHandler()).transform(original_response_clone)
 
             } else {
                 original_text = await original_response_clone.body;
@@ -272,8 +279,8 @@ async function replace_response_text(response, upstream_domain, host_name) {
     // let replacereg = new RegExp(upstream_domain+'/', 'g');
     // text = text.replace(replacereg, host_name+'/');
 
-    let newre = new RegExp('</body>', 'g');
-    text = text.replace(newre, clearurlbtn + '</body>');
+    let newre = new RegExp('</head>', 'g');
+    text = text.replace(newre, inject_js + '</head>');
 
     return text;
 }
