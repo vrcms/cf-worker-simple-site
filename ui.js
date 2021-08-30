@@ -2,8 +2,11 @@ const clearurlbtn = `
 <style>
 #clearsite {    
     position: fixed;
-    right: 0px;
-    top: 150px;
+    right: 5px;
+    top:25%;
+	width: 60px;    
+
+
     border:1px solid #4183c4;
     padding:5px 5px;
 
@@ -13,6 +16,7 @@ const clearurlbtn = `
     
     color: #999;    
 
+	
 
     box-shadow: -1px 0 6px rgb(0 0 0 / 20%);
     cursor: pointer;
@@ -30,16 +34,12 @@ const clearurlbtn = `
 
   </script>
 `
-function add_html(){
-    console.log('Run js...');
-    var btn = document.getElementById("clearsite");
-    console.log('typeof==',typeof btn);
-    if(typeof btn == 'undefined'){
-            //add goback botton
-            console.log('insert html ...code ');
-            document.write(clearurlbtn)
-    }
-  
+function add_html(){    
+	var btn = document.getElementById("clearsite");    
+    if(!btn){
+           //add goback botton          
+          document.write(clearurlbtn)
+    }  
 }
 
 
@@ -48,6 +48,5 @@ window.onload=function(){
 }
 
 add_html();
-
 
 
