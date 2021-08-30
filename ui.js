@@ -16,6 +16,7 @@ const clearurlbtn = `
 
     box-shadow: -1px 0 6px rgb(0 0 0 / 20%);
     cursor: pointer;
+    z-index:9999;
 }
 </style>
 <button id="clearsite" title="点击返回 click go back to the CF-WORKER">返回Back</button>
@@ -34,6 +35,7 @@ function add_html(){
     var btn = document.getElementById("clearsite");
     if(typeof btn == 'undefined'){
             //add goback botton
+            console.log('insert html ...code ');
             document.write(clearurlbtn)
     }
   
