@@ -33,6 +33,7 @@ const clearurlbtn = `
 function add_html(){
     console.log('Run js...');
     var btn = document.getElementById("clearsite");
+    console.log('typeof==',typeof btn);
     if(typeof btn == 'undefined'){
             //add goback botton
             console.log('insert html ...code ');
