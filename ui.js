@@ -3,7 +3,7 @@ const clearurlbtn = `
 #clearsite {    
     position: fixed;
     right: 2px;
-    top:25%;
+    top:20%;
 	height:35px;
 	width: 35px;    
 
