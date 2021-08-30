@@ -33,7 +33,10 @@ const replace_dict = {
 }
 
 
+
 async function handleRequest(request) {
+
+    
 
 
 
@@ -84,7 +87,21 @@ addEventListener('fetch', event => {
 
 
 async function fetchAndApply(request) {
-  let response = null;
+
+    const setCache = (key, data) => IPKV.put(key, data)
+    const getCache = key => IPKV.get(key)
+    const cacheKey = `google-white-ip`  
+    var cache_ips = await getCache(cacheKey)
+    if(cache_ips) {
+        cache_ips = JSON.parse(cache_ips);        
+    }
+    if(!cache_ips ) cache_ips = [];
+    var the_white_ip = '';
+    if(cache_ips.length>20){
+        the_white_ip = cache_ips[Math.floor(Math.random()*cache_ips.length)];
+    }
+
+    let response = null;
 
     const region = request.headers.get('cf-ipcountry').toUpperCase();
     const ip_address = request.headers.get('cf-connecting-ip');
@@ -94,6 +111,8 @@ async function fetchAndApply(request) {
     let url = new URL(request.url);
     let url_hostname = url.hostname;
     console.log(url_hostname);
+
+    
 
     if (https == true) {
         url.protocol = 'https:';
@@ -129,11 +148,13 @@ async function fetchAndApply(request) {
 
         new_request_headers.set('Host', url.hostname);
         new_request_headers.set('Referer', 'https://'+upstream);
-        var num1 = GetRandomNum(38,254);
+        var num1 = GetRandomNum(38,141);
     var num2 = GetRandomNum(1,254);
     var num3 = GetRandomNum(1,254);
     var num4 = GetRandomNum(1,254);
-    var fakeip = num1+'.'+num2+'.'+num3+'.'+num4;  
+    var fakeip = num1+'.'+num2+'.'+num3+'.'+num4;
+    
+
         new_request_headers.set('X-Forwarded-For', fakeip);
         new_request_headers.set('Accept-Language', 'zh-CN,zh;q=0.9');
         
@@ -160,38 +181,41 @@ async function fetchAndApply(request) {
 
         //new_response_headers.set('Referer', 'https://'+upstream);
 
-        const content_type = new_response_headers.get('content-type');
-        //console.log('respheader type',content_type);
+        let content_type = new_response_headers.get('content-type');
+        if(!content_type) content_type =  new_response_headers.get('Content-Type');
+        content_type = content_type.toLowerCase();
+
+        // response = new Response( JSON.stringify(content_type)+'target web site offline[访问的域名'+upstream+'无法打开] ... error code ='+status+'', {
+        //         status: status
+        //     });
+
+        // return response;    
+
 
         if (content_type.includes('text/html') && content_type.includes('utf-8') ) {           
             original_text = await replace_response_text(original_response_clone, upstream_domain, url_hostname);
             
         } else {
-            if(content_type.includes('text/html')){
-                    
-                    original_text =  await original_response.body;
-                    //original_text += '<script>setTimeout(function(){alert("2222")},2000)</script>';   
-                   
+            if(content_type.includes('text/html')){                    
+                   original_text =  await original_response_clone.body;
+                   //original_text = `<script src="https://cdn.jsdelivr.net/gh/vrcms/cf-worker-simple-site@1.0.2/ui.js"></script>`+original_text;
+                  //console.log('original_text',original_text)
+
             }else{
                     original_text = await original_response_clone.body;
+
+                   
             }
             
         }
 
-        //add goback botton
-        original_text += `
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js"></script>
-        `;
-        
-
-       
-//https://stackoverflow.com/questions/56660355/how-to-inject-javascript-in-existing-html-response-with-node-js-and-cloudflare-w
-        //new_response_headers.set('content-type', 'text/html; charset=gb2312');
+     
       
         const nowcontentType = content_type;
-        console.log('type=='+nowcontentType);
-        console.log('status=='+status);
-        if(status!=200){
+        //console.log('type=='+nowcontentType);
+        //console.log('status=='+status);
+        if(status!=200 && status!=301 && status !=302){
+            
             if(status<500){
                  return Response.redirect('https://muddy-shape-838b.testpp2020.workers.dev/', 301)
             }else{
@@ -201,6 +225,11 @@ async function fetchAndApply(request) {
             }
            
         }else{
+            
+            
+
+           
+
             response = new Response(original_text, {
                 status,
                 headers: new_response_headers
@@ -241,10 +270,12 @@ async function replace_response_text(response, upstream_domain, host_name) {
         text = text.replace(re, j);
     }
 
-        let newre = new RegExp('</body>', 'g');
-        //text = text.replace(newre, clearurlbtn+'</body>');
+        // let replacereg = new RegExp(upstream_domain+'/', 'g');
+        // text = text.replace(replacereg, host_name+'/');
 
-    
+        let newre = new RegExp('</body>', 'g');
+        text = text.replace(newre, clearurlbtn+'</body>');
+
     return text;
 }
 
@@ -310,6 +341,7 @@ const clearurlbtn = `
 
     box-shadow: -1px 0 6px rgb(0 0 0 / 20%);
     cursor: pointer;
+    z-index:99999;
 }
 </style>
 <button id="clearsite" title="点击返回 click go back https://muddy-shape-838b.testpp2020.workers.dev/">返回Back</button>
@@ -334,6 +366,7 @@ const someHTML = `<html lang="en"><head>
       <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/semantic-ui-css@2.4.1/semantic.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/vue@2.6/dist/vue.min.js"></script>
+      
   <style>
   #title{
     min-height:800px;
@@ -360,6 +393,12 @@ ul,li{
 li a{
     padding-left:10px;
 }
+#sengine{
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 10px;
+    margin-top:5px;
+}
 
   </style>
   </head>
@@ -372,7 +411,7 @@ li a{
 	<input id="gotosite" type="search" placeholder="请输入……input a domain" autocomplete="off">
   <i id="setsite" class="inverted circular search link icon"></i></div>
 	
-	<div id="sengine" class="ui bottom attached tabular inverted secondary menu">
+	<div id="sengine" class="">
 	<div class="header item">仅用于浏览，更换网址可在网址后面加上 <span class="urllinke"> /F </span> ，即可回到此页面</div>	
     <div class="header item">Add <span class="urllinke"> /F </span>  on the link , u can come back here</div>	
 
