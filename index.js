@@ -1,12 +1,11 @@
 
 
 
-function GetRandomNum(Min,Max)
-{   
-    var Range = Max - Min;   
-    var Rand = Math.random();   
-    return(Min + Math.round(Rand * Range));   
-} 
+function GetRandomNum(Min, Max) {
+    var Range = Max - Min;
+    var Rand = Math.random();
+    return (Min + Math.round(Rand * Range));
+}
 
 // Website you intended to retrieve for users.
 var upstream = ''
@@ -18,7 +17,7 @@ var upstream_path = '/'
 var upstream_mobile = ''
 
 // Countries and regions where you wish to suspend your service.
-const blocked_region = [ 'KP', 'SY', 'PK', 'CU']
+const blocked_region = ['KP', 'SY', 'PK', 'CU']
 
 // IP addresses which you wish to block from using your service.
 const blocked_ip_address = ['0.0.0.0', '127.0.0.1']
@@ -28,7 +27,7 @@ const https = true
 
 // Replace texts.
 const replace_dict = {
-    '$upstream': '$custom_domain',    
+    '$upstream': '$custom_domain',
     '//google.com': ''
 }
 
@@ -36,52 +35,52 @@ const replace_dict = {
 
 async function handleRequest(request) {
 
-    
 
 
 
-  const NAME = 'experiment-0'
-  // Responses below are place holders, you could set up
-  // a custom path for each test (e.g. /control/somepath )
-  const TEST_RESPONSE = new Response('Test group') // fetch('/test/sompath', request)
-  const CONTROL_RESPONSE = new Response('Control group') // fetch('/control/sompath', request)
-  // Determine which group this requester is in.
-  //const cookie = request.headers.get('cookie')
-  const cookie = getCookie(request,'gotosite');
 
-  let nowurl = new URL(request.url);
+    const NAME = 'experiment-0'
+    // Responses below are place holders, you could set up
+    // a custom path for each test (e.g. /control/somepath )
+    const TEST_RESPONSE = new Response('Test group') // fetch('/test/sompath', request)
+    const CONTROL_RESPONSE = new Response('Control group') // fetch('/control/sompath', request)
+    // Determine which group this requester is in.
+    //const cookie = request.headers.get('cookie')
+    const cookie = getCookie(request, 'gotosite');
 
-//if setting a cookie goto the site..
-if(cookie && cookie!='null'){
-  upstream = upstream_mobile = cookie;
-  if (nowurl.pathname == '/F' || nowurl.pathname == '/f') {
-      return indexpage()
-  }
+    let nowurl = new URL(request.url);
 
-//goto the site
-return fetchAndApply(request);
+    //if setting a cookie goto the site..
+    if (cookie && cookie != 'null') {
+        upstream = upstream_mobile = cookie;
+        if (nowurl.pathname == '/F' || nowurl.pathname == '/f') {
+            return indexpage()
+        }
 
-}
+        //goto the site
+        return fetchAndApply(request);
 
-return indexpage();
-
-//show homepage
-function indexpage(){
-const init = {
-    headers: {
-      'content-type': 'text/html;charset=UTF-8',
-      }
     }
 
-    let response = new Response(someHTML, init)
-    return response
- 
-}
+    return indexpage();
+
+    //show homepage
+    function indexpage() {
+        const init = {
+            headers: {
+                'content-type': 'text/html;charset=UTF-8',
+            }
+        }
+
+        let response = new Response(someHTML, init)
+        return response
+
+    }
 }
 
 
 addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request))
+    event.respondWith(handleRequest(event.request))
 })
 
 
@@ -90,15 +89,15 @@ async function fetchAndApply(request) {
 
     const setCache = (key, data) => IPKV.put(key, data)
     const getCache = key => IPKV.get(key)
-    const cacheKey = `google-white-ip`  
+    const cacheKey = `google-white-ip`
     var cache_ips = await getCache(cacheKey)
-    if(cache_ips) {
-        cache_ips = JSON.parse(cache_ips);        
+    if (cache_ips) {
+        cache_ips = JSON.parse(cache_ips);
     }
-    if(!cache_ips ) cache_ips = [];
+    if (!cache_ips) cache_ips = [];
     var the_white_ip = '';
-    if(cache_ips.length>20){
-        the_white_ip = cache_ips[Math.floor(Math.random()*cache_ips.length)];
+    if (cache_ips.length > 20) {
+        the_white_ip = cache_ips[Math.floor(Math.random() * cache_ips.length)];
     }
 
     let response = null;
@@ -107,12 +106,12 @@ async function fetchAndApply(request) {
     const ip_address = request.headers.get('cf-connecting-ip');
     const user_agent = request.headers.get('user-agent');
 
-    
+
     let url = new URL(request.url);
     let url_hostname = url.hostname;
     console.log(url_hostname);
 
-    
+
 
     if (https == true) {
         url.protocol = 'https:';
@@ -134,7 +133,7 @@ async function fetchAndApply(request) {
     }
 
     if (blocked_region.includes(region)) {
-        response = new Response('Access denied: The Service is not available in your region['+region+'] yet.', {
+        response = new Response('Access denied: The Service is not available in your region[' + region + '] yet.', {
             status: 403
         });
     } else if (blocked_ip_address.includes(ip_address)) {
@@ -147,17 +146,17 @@ async function fetchAndApply(request) {
         let new_request_headers = new Headers(request_headers);
 
         new_request_headers.set('Host', url.hostname);
-        new_request_headers.set('Referer', 'https://'+upstream);
-        var num1 = GetRandomNum(38,141);
-    var num2 = GetRandomNum(1,254);
-    var num3 = GetRandomNum(1,254);
-    var num4 = GetRandomNum(1,254);
-    var fakeip = num1+'.'+num2+'.'+num3+'.'+num4;
-    
+        new_request_headers.set('Referer', 'https://' + upstream);
+        var num1 = GetRandomNum(38, 141);
+        var num2 = GetRandomNum(1, 254);
+        var num3 = GetRandomNum(1, 254);
+        var num4 = GetRandomNum(1, 254);
+        var fakeip = num1 + '.' + num2 + '.' + num3 + '.' + num4;
+
 
         new_request_headers.set('X-Forwarded-For', fakeip);
         new_request_headers.set('Accept-Language', 'zh-CN,zh;q=0.9');
-        
+
 
         let original_response = await fetch(url.href, {
             method: method,
@@ -175,14 +174,14 @@ async function fetchAndApply(request) {
         new_response_headers.delete('content-security-policy');
         new_response_headers.delete('content-security-policy-report-only');
         new_response_headers.delete('clear-site-data');
-    
-        
-        
+
+
+
 
         //new_response_headers.set('Referer', 'https://'+upstream);
 
         let content_type = new_response_headers.get('content-type');
-        if(!content_type) content_type =  new_response_headers.get('Content-Type');
+        if (!content_type) content_type = new_response_headers.get('Content-Type');
         content_type = content_type.toLowerCase();
 
         // response = new Response( JSON.stringify(content_type)+'target web site offline[访问的域名'+upstream+'无法打开] ... error code ='+status+'', {
@@ -192,43 +191,43 @@ async function fetchAndApply(request) {
         // return response;    
 
 
-        if (content_type.includes('text/html') && content_type.includes('utf-8') ) {           
+        if (content_type.includes('text/html') && content_type.includes('utf-8')) {
             original_text = await replace_response_text(original_response_clone, upstream_domain, url_hostname);
-            
+
         } else {
-            if(content_type.includes('text/html')){                    
-                   original_text =  await original_response_clone.body;
-                   //original_text = `<script src="https://cdn.jsdelivr.net/gh/vrcms/cf-worker-simple-site@1.0.2/ui.js"></script>`+original_text;
-                  //console.log('original_text',original_text)
+            if (content_type.includes('text/html')) {
+                original_text = await original_response_clone.body;
+                //original_text = `<script src="https://cdn.jsdelivr.net/gh/vrcms/cf-worker-simple-site@1.0.2/ui.js"></script>`+original_text;
+                //console.log('original_text',original_text)
 
-            }else{
-                    original_text = await original_response_clone.body;
+            } else {
+                original_text = await original_response_clone.body;
 
-                   
+
             }
-            
+
         }
 
-     
-      
+
+
         const nowcontentType = content_type;
         //console.log('type=='+nowcontentType);
         //console.log('status=='+status);
-        if(status!=200 && status!=301 && status !=302){
-            
-            if(status<500){
-                 return Response.redirect('https://muddy-shape-838b.testpp2020.workers.dev/', 301)
-            }else{
-                 response = new Response('target web site offline[访问的域名'+upstream+'无法打开] ... error code ='+status+'', {
-                status: status
-            });
-            }
-           
-        }else{
-            
-            
+        if (status != 200 && status != 301 && status != 302) {
 
-           
+            if (status < 500) {
+                return Response.redirect('https://muddy-shape-838b.testpp2020.workers.dev/', 301)
+            } else {
+                response = new Response('target web site offline[访问的域名' + upstream + '无法打开] ... error code =' + status + '', {
+                    status: status
+                });
+            }
+
+        } else {
+
+
+
+
 
             response = new Response(original_text, {
                 status,
@@ -236,7 +235,7 @@ async function fetchAndApply(request) {
             });
         }
 
-       
+
 
 
     }
@@ -270,11 +269,11 @@ async function replace_response_text(response, upstream_domain, host_name) {
         text = text.replace(re, j);
     }
 
-        // let replacereg = new RegExp(upstream_domain+'/', 'g');
-        // text = text.replace(replacereg, host_name+'/');
+    // let replacereg = new RegExp(upstream_domain+'/', 'g');
+    // text = text.replace(replacereg, host_name+'/');
 
-        let newre = new RegExp('</body>', 'g');
-        text = text.replace(newre, clearurlbtn+'</body>');
+    let newre = new RegExp('</body>', 'g');
+    text = text.replace(newre, clearurlbtn + '</body>');
 
     return text;
 }
@@ -298,7 +297,7 @@ var GB2312UnicodeConverter = {
     }
     , ToGB2312: function (str) {
         return unescape(str.replace(/\\u/gi, '%u'));
-    } 
+    }
 };
 
 
@@ -308,19 +307,19 @@ var GB2312UnicodeConverter = {
  * @param {string} name of the cookie to grab
  */
 function getCookie(request, name) {
-  let result = null
-  let cookieString = request.headers.get('cookie')
-  if (cookieString) {
-    let cookies = cookieString.split(';')
-    cookies.forEach(cookie => {
-      let cookieName = cookie.split('=')[0].trim()
-      if (cookieName === name) {
-        let cookieVal = cookie.split('=')[1]
-        result = cookieVal
-      }
-    })
-  }
-  return result
+    let result = null
+    let cookieString = request.headers.get('cookie')
+    if (cookieString) {
+        let cookies = cookieString.split(';')
+        cookies.forEach(cookie => {
+            let cookieName = cookie.split('=')[0].trim()
+            if (cookieName === name) {
+                let cookieVal = cookie.split('=')[1]
+                result = cookieVal
+            }
+        })
+    }
+    return result
 }
 
 const clearurlbtn = `
